@@ -3,6 +3,7 @@
 
 #import requests
 import json
+import re
 import requests
 import pytz
 import os
@@ -74,6 +75,12 @@ if len(sys.argv) == 2:
 ensure_folders_exist(output_dir, secondary_output_dir)
 os.chdir(output_dir)
 
+present_slugs = []
+present_ids = []
+
+def cleanup_event(event):
+    event._event['description'] = re.sub(u'[^\u0020-\uD7FF\u0009\u000A\u000D\uE000-\uFFFD\U00010000-\U0010FFFF]+', '', event.get('description'))
+    # TODO: Slug, UUID etc.
 
 def main():
 
@@ -117,7 +124,7 @@ def main():
             if options.exit_when_exception_occours:
                 raise e
 
-    
+    full_schedule.foreach_event(cleanup_event)
 
     #full_schedule.foreach_event(harmonize_event_type)
     #
