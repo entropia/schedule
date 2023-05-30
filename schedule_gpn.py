@@ -9,6 +9,7 @@ import pytz
 import os
 import sys
 import optparse
+import uuid
 # import git as gitlib
 
 from voc.schedule import Schedule, ScheduleEncoder, Event
@@ -77,17 +78,37 @@ os.chdir(output_dir)
 
 present_slugs = []
 present_ids = []
+present_uuids = []
 
 def cleanup_event(event):
-    event._event['description'] = re.sub(u'[^\u0020-\uD7FF\u0009\u000A\u000D\uE000-\uFFFD\U00010000-\U0010FFFF]+', '', event.get('description'))
-    # TODO: Slug, UUID etc.
+    event['description'] = re.sub(u'[^\u0020-\uD7FF\u0009\u000A\u000D\uE000-\uFFFD\U00010000-\U0010FFFF]+', '', event.get('description'))
+    # slug should replace gpn21-lounge with gpn21_lounge
+    event['slug'] = event.get('slug').replace('gpn21-lounge', 'gpn21_lounge')
+    # handle duplicate ids
+    if event.get('id') in present_ids:
+        event['id'] = event.get('id') + 5000
+        print("id duplicate, new id: " + str(event.get('id')))
+    present_ids.append(event.get('id'))
+    # handle duplicate slugs
+    if event.get('slug') in present_slugs:
+        event['slug'] = event.get('slug') + '_' + str(event.get('id'))
+        print("slug duplicate, new slug: " + event.get('slug'))
+    present_slugs.append(event.get('slug'))
+
+    # handle duplicate uuid, replace uuid with new uuid (hashed by date and title)
+    if event.get('guid') in present_uuids:
+        # generate new uuid, hash formated as uuid
+        event['guid'] =  str(uuid.uuid5(uuid.NAMESPACE_DNS, str(event.get('date')) + str(event.get('title'))))
+        print("uuid duplicate, new uuid: " + str(event.get('guid')))
+    present_uuids.append(event.get('guid'))
+
+    return True
 
 def main():
 
     full_schedule = Schedule.from_url(main_schedule_url)
     print('  version: ' + full_schedule.version())
     print('  contains {events_count} events, with local ids from {min_id} to {max_id}'.format(**full_schedule.stats.__dict__))
-
 
     # append lounge url
     for entry in additional_schedule_urls:
@@ -99,14 +120,15 @@ def main():
                 continue
  
             other_schedule = Schedule.from_url(url)
+            
 
             id_offset = entry.get('id_offset') or id_offsets.get(entry['name']) or 0
 
             other_schedule["version"] = entry['slug']+other_schedule["version"] 
-
+            
             if full_schedule.add_events_from(other_schedule, id_offset=id_offset, options={
                 **(entry.get('options') or {}),
-                'prefix_person_ids': entry.get('prefix')
+                'prefix_person_ids': entry.get('prefix'),
             }):
                 print('  success')
 
@@ -124,9 +146,11 @@ def main():
             if options.exit_when_exception_occours:
                 raise e
 
-    full_schedule.foreach_event(cleanup_event)
+    for day in full_schedule["conference"]["days"]:
+        for room in day["rooms"]:
+            for event in day["rooms"][room]:
+                cleanup_event(event)
 
-    #full_schedule.foreach_event(harmonize_event_type)
     #
     # write all events to one big schedule.json/xml
     write('\nExporting... ')
