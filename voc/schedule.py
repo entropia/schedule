@@ -677,9 +677,6 @@ class Schedule(dict):
                                 "license": recording_license,
                                 "optout": "true" if v is True else "false",
                             }
-                        # new style schedule.json (version 2022-12)
-                        elif k == "optout":
-                            v = "true" if v is True else "false"
 
                         # iterate over lists
                         if isinstance(v, list):
