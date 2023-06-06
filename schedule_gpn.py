@@ -102,6 +102,10 @@ def cleanup_event(event):
         print("uuid duplicate, new uuid: " + str(event.get('guid')))
     present_uuids.append(event.get('guid'))
 
+    # we never record workshops or meetups
+    if event["type"] in ["Workshop", "Meetup"]:
+        event["do_not_record"] = True
+
     return True
 
 def main():
