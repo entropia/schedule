@@ -32,14 +32,14 @@ local = True
 use_offline_frab_schedules = False
 only_workshops = False
 
-xc3 = "GPN21"
+xc3 = "GPN22"
 
-main_schedule_url = 'https://cfp.gulas.ch/gpn21/schedule/export/schedule.json'
+main_schedule_url = 'https://cfp.gulas.ch/gpn22/schedule/export/schedule.json'
 
 additional_schedule_urls = [
     {
         'name': 'GPN21 Lounge',
-        'url': 'https://cfp.gulas.ch/gpn21-lounge/schedule/export/schedule.json',
+        'url': 'https://cfp.gulas.ch/gpn22-lounge/schedule/export/schedule.json',
         'id_offset': 1000,
         'slug': 'lounge',
     }
