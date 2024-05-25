@@ -168,5 +168,18 @@ def main():
         print('   - ' + room)
     print()
 
+    # filter and export the schedule.xml for workshops
+    def schedule_filter(e):
+        status = e["id"]
+        if e["type"] in ["Workshop"] and e["room"] in ["HfG Raum 112", "HfG Raum 115", "Kubus"]:
+            status = None
+            print(e["title"])
+        return status
+    schedule_workshops = full_schedule.copy()
+    schedule_workshops_remove = schedule_workshops.foreach_event(schedule_filter)
+    for r in schedule_workshops_remove:
+        schedule_workshops.remove_event(r)
+    schedule_workshops.export('workshop-reservation')
+
 if __name__ == '__main__':
     main()
