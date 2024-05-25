@@ -173,13 +173,36 @@ def main():
         status = e["id"]
         if e["type"] in ["Workshop"] and e["room"] in ["HfG Raum 112", "HfG Raum 115", "Kubus"]:
             status = None
-            print(e["title"])
         return status
     schedule_workshops = full_schedule.copy()
     schedule_workshops_remove = schedule_workshops.foreach_event(schedule_filter)
     for r in schedule_workshops_remove:
         schedule_workshops.remove_event(r)
     schedule_workshops.export('workshop-reservation')
+
+    # filter and export the schedule.xml for talks
+    def schedule_filter(e):
+        status = e["id"]
+        if e["type"] in ["Vortrag", "Vortrag (kurz)"]:
+            status = None
+        return status
+    schedule_talks = full_schedule.copy()
+    schedule_talks_remove = schedule_talks.foreach_event(schedule_filter)
+    for r in schedule_talks_remove:
+        schedule_talks.remove_event(r)
+    schedule_talks.export('all-talks')
+
+    # filter and export the schedule.xml for talks
+    def schedule_filter(e):
+        status = e["id"]
+        if e["type"] in ["Vortrag", "Vortrag (kurz)"] and e["do_not_record"] == False:
+            status = None
+        return status
+    schedule_talks = full_schedule.copy()
+    schedule_talks_remove = schedule_talks.foreach_event(schedule_filter)
+    for r in schedule_talks_remove:
+        schedule_talks.remove_event(r)
+    schedule_talks.export('recorded-talks')
 
 if __name__ == '__main__':
     main()
