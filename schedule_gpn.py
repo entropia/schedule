@@ -106,6 +106,11 @@ def cleanup_event(event):
     if event["type"] in ["Workshop", "Meetup"]:
         event["do_not_record"] = True
 
+    for key in event.keys():
+        if type(event[key]) is str:
+            # cleanup windows and macOS line endings
+            event[key] = event[key].replace("\r\n", "\n").replace("\r", "\n")
+
     return True
 
 def main():
