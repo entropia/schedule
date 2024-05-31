@@ -85,7 +85,7 @@ def cleanup_event(event):
     # slug should replace gpn21-lounge with gpn21_lounge
     event['slug'] = event.get('slug').replace('gpn21-lounge', 'gpn21_lounge')
     # handle duplicate ids
-    if event.get('id') in present_ids:
+    while event.get('id') in present_ids:
         event['id'] = event.get('id') + 5000
         print("id duplicate, new id: " + str(event.get('id')))
     present_ids.append(event.get('id'))
