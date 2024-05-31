@@ -176,7 +176,7 @@ def main():
     # filter and export the schedule.xml for workshops
     def schedule_filter(e):
         status = e["id"]
-        if e["type"] in ["Workshop"] and e["room"] in ["HfG Raum 112", "HfG Raum 115", "Kubus"]:
+        if e["type"] in ["Workshop"] and e["room"] in ["HfG Raum 112", "HfG Raum 115", "ZKM Kubus"]:
             status = None
         return status
     schedule_workshops = full_schedule.copy()
