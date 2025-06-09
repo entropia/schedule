@@ -12,7 +12,11 @@ jobs:
     - uses: https://code.forgejo.org/actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
       with:
         fetch-depth: 0
-    - run: pip install -r requirements.txt
+    - name: create and persist venv
+      run: |
+        python3 -m venv .venv
+        echo PATH=${GITHUB_WORKSPACE}/.venv/bin:$PATH >> $GITHUB_ENV
+    - run: python3 -m pip install -r requirements.txt
     - run: mkdir out
     - name: Prepare GPN Fahrplan
       run: python3 schedule_gpn.py
