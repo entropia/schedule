@@ -23,7 +23,7 @@ jobs:
 
   publish:
     runs-on: docker
-    needs: build-document
+    needs: build
     container:
       image: codeberg.org/margau/buildenv-rclone:latest@sha256:4c357e7e49133c99b857551058dbf3e9cafda2fb8ec9ac493ed1585f4a9447fb
     steps:
