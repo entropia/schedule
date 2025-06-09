@@ -1,0 +1,45 @@
+name: Upload GPN Fahrplan
+
+on:
+  push:
+  schedule:
+    - cron:  '*/10 * * * *'
+
+jobs:
+  build:
+    runs-on: docker
+    container: 
+      image: codeberg.org/margau/buildenv-docker_base:latest
+    steps:
+    - uses: https://code.forgejo.org/actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      with:
+        fetch-depth: 0
+    - run: pip install -r requirements.txt
+    - run: mkdir out
+    - name: Prepare GPN Fahrplan
+      run: python3 schedule_gpn.py
+    - uses: https://code.forgejo.org/forgejo/upload-artifact@16871d9e8cfcf27ff31822cac382bbb5450f1e1e # v4
+      with:
+        path: out/
+        name: fahrplan-out
+
+  publish:
+    runs-on: docker
+    needs: build-document
+    container:
+      image: codeberg.org/margau/buildenv-rclone:latest@sha256:4c357e7e49133c99b857551058dbf3e9cafda2fb8ec9ac493ed1585f4a9447fb
+    steps:
+    - uses: https://code.forgejo.org/forgejo/download-artifact@d8d0a99033603453ad2255e58720b460a0555e1e # v4
+      with:
+        name: fahrplan-out
+        path: out
+    - name: Upload S3
+      run: rclone copy out/ mys3:gpn-fahrplan/
+      env:
+        RCLONE_CONFIG_MYS3_TYPE: s3
+        RCLONE_CONFIG_MYS3_PROVIDER: "Other"
+        RCLONE_CONFIG_MYS3_ENV_AUTH: "true"
+        RCLONE_CONFIG_MYS3_ENDPOINT: https://s3.margau.net
+        RCLONE_CONFIG_MYS3_FORCE_PATH_STYLE: "true"
+        RCLONE_CONFIG_MYSQ_ACL: private
+        RCLONE_CONFIG_MYS3_BUCKET_ACL: private
