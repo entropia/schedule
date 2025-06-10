@@ -45,3 +45,6 @@ jobs:
         RCLONE_CONFIG_MYS3_FORCE_PATH_STYLE: "true"
         RCLONE_CONFIG_MYSQ_ACL: private
         RCLONE_CONFIG_MYS3_BUCKET_ACL: private
+        RCLONE_CONFIG_MYS3_REGION: garage
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
