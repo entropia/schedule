@@ -188,7 +188,7 @@ def main():
     # filter and export the schedule.xml for talks
     def schedule_filter(e):
         status = e["id"]
-        if e["type"] in ["Vortrag", "Vortrag (kurz)"]:
+        if e["type"] in ["Vortrag", "Kurzvortrag"]:
             status = None
         return status
     schedule_talks = full_schedule.copy()
@@ -200,7 +200,7 @@ def main():
     # filter and export the schedule.xml for talks
     def schedule_filter(e):
         status = e["id"]
-        if e["type"] in ["Vortrag", "Vortrag (kurz)"] and e["do_not_record"] == False:
+        if e["type"] in ["Vortrag", "Kurzvortrag"] and e["do_not_record"] == False:
             status = None
         return status
     schedule_talks = full_schedule.copy()
